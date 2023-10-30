@@ -2,6 +2,7 @@ import { Meteor } from "meteor/meteor";
 import { IArticle } from "/imports/types/IArticle";
 import { Articles } from "/imports/api/models/Articles";
 import { check } from "meteor/check";
+import { Comments } from "/imports/api/models/Comments";
 
 const getAllArticles = async (filter: { page: number; search: string }) => {
   const skipCount = filter?.page ? Math.max(+filter.page - 1, 0) * 10 : 0;
@@ -102,6 +103,7 @@ const removeArticle = (articleID: string) => {
   if (currentArticle.createdById !== currentUserID) {
     throw new Meteor.Error("You are not the owner to remove this article");
   }
+  Comments.collection.remove({ articleId: articleID });
   return Articles.collection.remove({ _id: articleID });
 };
 
